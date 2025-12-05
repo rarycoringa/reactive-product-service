@@ -11,7 +11,7 @@ import br.edu.ufrn.product.exception.InsufficientQuantityException;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 
-@Document(collation = "products")
+@Document(collection = "products")
 public class Product {
 
     @Id
@@ -29,8 +29,7 @@ public class Product {
     @Indexed(direction = IndexDirection.DESCENDING)
     private Instant createdAt;
 
-    public Product(String id, String name, Integer quantity, Double price) {
-        this.id = id;
+    public Product(String name, Integer quantity, Double price) {
         this.name = name;
         this.quantity = quantity;
         this.price = price;
@@ -57,12 +56,20 @@ public class Product {
         return name;
     }
 
+    public void setName(String name) {
+        this.name = name;
+    }
+
     public Integer getQuantity() {
         return quantity;
     }
 
     public Double getPrice() {
         return price;
+    }
+
+    public void setPrice(Double price) {
+        this.price = price;
     }
 
     public Instant getCreatedAt() {

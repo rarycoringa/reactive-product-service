@@ -6,6 +6,6 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class ProductService {
-    private final Logger logger = LoggerFactory.getLogger(ProductService.class);
+    private static final Logger logger = LoggerFactory.getLogger(ProductService.class);
 
 }
