@@ -1,6 +1,6 @@
 package br.edu.ufrn.product.exception;
 
-public class InsufficientQuantityException extends ArithmeticException {
+public class InsufficientQuantityException extends RuntimeException {
     private static final String message = "Insufficient quantity in stock.";
 
     public InsufficientQuantityException() {
