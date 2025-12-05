@@ -1,6 +1,6 @@
 spring:
     application:
-        name: stock
+        name: product
     cloud:
         config:
             discovery:

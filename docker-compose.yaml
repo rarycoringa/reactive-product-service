@@ -1,7 +1,7 @@
 services:
-  stock:
+  product:
     build: .
-    container_name: stock
+    container_name: product
     environment:
       - SERVER_PORT=8282
     ports:

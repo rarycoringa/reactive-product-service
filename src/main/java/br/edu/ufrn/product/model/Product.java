@@ -1,4 +1,4 @@
-package br.edu.ufrn.stock.model;
+package br.edu.ufrn.product.model;
 
 import java.time.Instant;
 
@@ -7,29 +7,33 @@ import org.springframework.data.mongodb.core.index.IndexDirection;
 import org.springframework.data.mongodb.core.index.Indexed;
 import org.springframework.data.mongodb.core.mapping.Document;
 
-import br.edu.ufrn.stock.exception.InsufficientStockException;
+import br.edu.ufrn.product.exception.InsufficientQuantityException;
 import jakarta.validation.constraints.Positive;
 import jakarta.validation.constraints.PositiveOrZero;
 
-@Document(collation = "stocks")
-public class Stock {
+@Document(collation = "products")
+public class Product {
 
     @Id
     private String id;
 
     @Indexed
-    private String itemId;
+    private String name;
 
     @PositiveOrZero(message = "Quantity should be zero or higher.")
     private Integer quantity;
 
+    @PositiveOrZero(message = "Price should be zero or higher.")
+    private Double price;
+
     @Indexed(direction = IndexDirection.DESCENDING)
     private Instant createdAt;
 
-    public Stock(String itemId) {
-        this.itemId = itemId;
-        this.quantity = 0;
-        
+    public Product(String id, String name, Integer quantity, Double price) {
+        this.id = id;
+        this.name = name;
+        this.quantity = quantity;
+        this.price = price;
         this.createdAt = Instant.now();
     }
 
@@ -37,9 +41,9 @@ public class Stock {
         quantity += value;
     }
 
-    public void decrease(@Positive Integer value) throws InsufficientStockException {
+    public void decrease(@Positive Integer value) throws InsufficientQuantityException {
         if (value > quantity) {
-            throw new InsufficientStockException();
+            throw new InsufficientQuantityException();
         }
         
         quantity -= value;
@@ -49,12 +53,16 @@ public class Stock {
         return id;
     }
 
-    public String getItemId() {
-        return itemId;
+    public String getName() {
+        return name;
     }
 
     public Integer getQuantity() {
         return quantity;
+    }
+
+    public Double getPrice() {
+        return price;
     }
 
     public Instant getCreatedAt() {
