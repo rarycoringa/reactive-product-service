@@ -20,7 +20,7 @@ public class Product {
     @Indexed
     private String name;
 
-    @PositiveOrZero(message = "Quantity should be zero or higher.")
+    @Positive(message = "Quantity should be higher than zero.")
     private Integer quantity;
 
     @PositiveOrZero(message = "Price should be zero or higher.")
