@@ -1,6 +1,6 @@
 package br.edu.ufrn.product.record;
 
-public record CreateProductRequestDTO(
+public record CreateProductDTO(
     String name,
     Integer quantity,
     Double price

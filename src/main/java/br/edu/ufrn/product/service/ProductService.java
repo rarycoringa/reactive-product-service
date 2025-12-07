@@ -8,8 +8,8 @@ import org.springframework.stereotype.Service;
 import br.edu.ufrn.product.exception.InsufficientQuantityException;
 import br.edu.ufrn.product.exception.ProductNotFoundException;
 import br.edu.ufrn.product.model.Product;
-import br.edu.ufrn.product.record.CreateProductRequestDTO;
-import br.edu.ufrn.product.record.ProductResponseDTO;
+import br.edu.ufrn.product.record.CreateProductDTO;
+import br.edu.ufrn.product.record.ProductDTO;
 import br.edu.ufrn.product.repository.ProductRepository;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -22,13 +22,13 @@ public class ProductService {
 
     private static final Logger logger = LoggerFactory.getLogger(ProductService.class);
 
-    public Mono<ProductResponseDTO> createProduct(CreateProductRequestDTO productRequest) {
+    public Mono<ProductDTO> createProduct(CreateProductDTO productRequest) {
         return productRepository
             .save(new Product(
                 productRequest.name(),
                 productRequest.quantity(),
                 productRequest.price()))
-            .map(product -> new ProductResponseDTO(
+            .map(product -> new ProductDTO(
                 product.getId(),
                 product.getName(),
                 product.getQuantity(),
@@ -37,10 +37,10 @@ public class ProductService {
             .doOnSuccess(product -> logger.info("Product successfully created: id={}", product.id()));
     }
 
-    public Flux<ProductResponseDTO> retrieveProducts() {
+    public Flux<ProductDTO> retrieveProducts() {
         return productRepository
             .findAll()
-            .map(product -> new ProductResponseDTO(
+            .map(product -> new ProductDTO(
                 product.getId(),
                 product.getName(),
                 product.getQuantity(),
@@ -49,10 +49,10 @@ public class ProductService {
             .doOnNext(product -> logger.info("Product successfully retrieved: id={}", product.id()));
     }
 
-    public Mono<ProductResponseDTO> retrieveProduct(String productId) {
+    public Mono<ProductDTO> retrieveProduct(String productId) {
         return productRepository
             .findById(productId)
-            .map(product -> new ProductResponseDTO(
+            .map(product -> new ProductDTO(
                 product.getId(),
                 product.getName(),
                 product.getQuantity(),
@@ -61,7 +61,7 @@ public class ProductService {
             .doOnSuccess(product -> logger.info("Order successfully retrieved: id={}", product.id()));
     }
 
-    public Mono<Integer> increase(String id, Integer value) {
+    public Mono<Integer> increaseProduct(String id, Integer value) {
         return productRepository
             .findById(id)
             .switchIfEmpty(Mono.error(new ProductNotFoundException()))
@@ -74,7 +74,7 @@ public class ProductService {
             .doOnError(err -> logger.error("Product increase failed: id={}, reason={}", id, err.getMessage()));
     }
 
-    public Mono<Integer> decrease(String id, Integer value) {
+    public Mono<Integer> decreaseProduct(String id, Integer value) {
         return productRepository
             .findById(id)
             .switchIfEmpty(Mono.error(new ProductNotFoundException()))

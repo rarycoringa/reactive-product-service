@@ -5,7 +5,7 @@ import java.time.Instant;
 import com.fasterxml.jackson.annotation.JsonFormat;
 import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record ProductResponseDTO(
+public record ProductDTO(
     String id,
     String name,
     Integer quantity,

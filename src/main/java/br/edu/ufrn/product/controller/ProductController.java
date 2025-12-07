@@ -9,8 +9,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import br.edu.ufrn.product.record.CreateProductRequestDTO;
-import br.edu.ufrn.product.record.ProductResponseDTO;
+import br.edu.ufrn.product.record.CreateProductDTO;
+import br.edu.ufrn.product.record.ProductDTO;
 import br.edu.ufrn.product.service.ProductService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
@@ -23,17 +23,17 @@ public class ProductController {
     private ProductService productService;
 
         @PostMapping
-    public Mono<ProductResponseDTO> createProduct(@RequestBody CreateProductRequestDTO body) {
+    public Mono<ProductDTO> createProduct(@RequestBody CreateProductDTO body) {
         return productService.createProduct(body);
     }
 
     @GetMapping(produces = MediaType.TEXT_EVENT_STREAM_VALUE)
-    public Flux<ProductResponseDTO> retrieveProducts() {
+    public Flux<ProductDTO> retrieveProducts() {
         return productService.retrieveProducts();
     }
 
     @GetMapping("/{id}")
-    public Mono<ProductResponseDTO> retrieveProduct(@PathVariable String id) {
+    public Mono<ProductDTO> retrieveProduct(@PathVariable String id) {
         return productService.retrieveProduct(id);
     }
 
