@@ -8,7 +8,10 @@ import org.springframework.stereotype.Service;
 import br.edu.ufrn.product.exception.InsufficientQuantityException;
 import br.edu.ufrn.product.exception.ProductNotFoundException;
 import br.edu.ufrn.product.model.Product;
+import br.edu.ufrn.product.record.CreateProductRequestDTO;
+import br.edu.ufrn.product.record.ProductResponseDTO;
 import br.edu.ufrn.product.repository.ProductRepository;
+import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
 
 @Service
@@ -18,6 +21,45 @@ public class ProductService {
     private ProductRepository productRepository;
 
     private static final Logger logger = LoggerFactory.getLogger(ProductService.class);
+
+    public Mono<ProductResponseDTO> createProduct(CreateProductRequestDTO productRequest) {
+        return productRepository
+            .save(new Product(
+                productRequest.name(),
+                productRequest.quantity(),
+                productRequest.price()))
+            .map(product -> new ProductResponseDTO(
+                product.getId(),
+                product.getName(),
+                product.getQuantity(),
+                product.getPrice(),
+                product.getCreatedAt()))
+            .doOnSuccess(product -> logger.info("Product successfully created: id={}", product.id()));
+    }
+
+    public Flux<ProductResponseDTO> retrieveProducts() {
+        return productRepository
+            .findAll()
+            .map(product -> new ProductResponseDTO(
+                product.getId(),
+                product.getName(),
+                product.getQuantity(),
+                product.getPrice(),
+                product.getCreatedAt()))
+            .doOnNext(product -> logger.info("Product successfully retrieved: id={}", product.id()));
+    }
+
+    public Mono<ProductResponseDTO> retrieveProduct(String productId) {
+        return productRepository
+            .findById(productId)
+            .map(product -> new ProductResponseDTO(
+                product.getId(),
+                product.getName(),
+                product.getQuantity(),
+                product.getPrice(),
+                product.getCreatedAt()))
+            .doOnSuccess(product -> logger.info("Order successfully retrieved: id={}", product.id()));
+    }
 
     public Mono<Integer> increase(String id, Integer value) {
         return productRepository
