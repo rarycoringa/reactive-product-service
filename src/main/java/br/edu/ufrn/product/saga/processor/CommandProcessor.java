@@ -68,7 +68,8 @@ public class CommandProcessor {
                         )
                     )
                 )
-            );
+            )
+            .doOnSuccess(productEvent -> logger.info("Product reserved: {}", productEvent));
     }
 
     private Mono<Event> returnProduct(Command command) {
@@ -88,7 +89,8 @@ public class CommandProcessor {
                         )
                     )
                 )
-            );
+            )
+            .doOnSuccess(productEvent -> logger.info("Product returned: {}", productEvent));
     }
 
 }
