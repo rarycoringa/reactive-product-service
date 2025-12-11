@@ -1,4 +1,4 @@
-package br.edu.ufrn.product.saga.orchestration;
+package br.edu.ufrn.product.saga.processor;
 
 import java.util.function.Function;
 
@@ -10,9 +10,9 @@ import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
 import br.edu.ufrn.product.exception.InsufficientQuantityException;
-import br.edu.ufrn.product.saga.orchestration.command.Command;
-import br.edu.ufrn.product.saga.orchestration.event.Event;
-import br.edu.ufrn.product.saga.orchestration.event.EventType;
+import br.edu.ufrn.product.saga.processor.command.Command;
+import br.edu.ufrn.product.saga.processor.event.Event;
+import br.edu.ufrn.product.saga.processor.event.EventType;
 import br.edu.ufrn.product.service.ProductService;
 import reactor.core.publisher.Flux;
 import reactor.core.publisher.Mono;
