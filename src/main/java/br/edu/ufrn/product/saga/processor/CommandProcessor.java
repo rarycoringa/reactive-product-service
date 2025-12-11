@@ -28,9 +28,9 @@ public class CommandProcessor {
     @Bean
     public Function<Flux<Command>, Flux<Event>> processProductCommand() {
         return flux -> flux
-            .doOnNext(command -> logger.info("Received payment command: {}", command))
+            .doOnNext(command -> logger.info("Received product command: {}", command))
             .concatMap(this::process)
-            .doOnNext(event -> logger.info("Sending payment event: {}", event));
+            .doOnNext(event -> logger.info("Sending product event: {}", event));
 
     }
 

@@ -59,7 +59,30 @@ public class Choreographer {
                     EventType.PRODUCT_RESERVED,
                     event.orderId(),
                     event.productId(),
-                    event.productQuantity()));
+                    event.productQuantity(),
+                    product.name(),
+                    product.price(),
+                    event.chargeId(),
+                    event.refundId(),
+                    product.price() * event.productQuantity(),
+                    event.splitInto(),
+                    event.cardNumber(),
+                    event.shippingId(),
+                    event.address()))
+                .onErrorReturn(new ProductEvent(
+                    EventType.PRODUCT_UNAVAILABLE,
+                    event.orderId(),
+                    event.productId(),
+                    event.productQuantity(),
+                    event.productName(),
+                    event.productPrice(),
+                    event.chargeId(),
+                    event.refundId(),
+                    event.amount(),
+                    event.splitInto(),
+                    event.cardNumber(),
+                    event.shippingId(),
+                    event.address()));
 
             case ORDER_CANCELLED, ORDER_FINISHED -> Mono.empty();
 
@@ -75,7 +98,16 @@ public class Choreographer {
                     EventType.PRODUCT_RETURNED,
                     event.orderId(),
                     event.productId(),
-                    event.productQuantity()));
+                    event.productQuantity(),
+                    product.name(),
+                    product.price(),
+                    event.chargeId(),
+                    event.refundId(),
+                    product.price() * event.productQuantity(),
+                    event.splitInto(),
+                    event.cardNumber(),
+                    event.shippingId(),
+                    event.address()));
 
             case PAYMENT_CHARGED, PAYMENT_REFUNDED -> Mono.empty();
 
@@ -91,7 +123,16 @@ public class Choreographer {
                     EventType.PRODUCT_RETURNED,
                     event.orderId(),
                     event.productId(),
-                    event.productQuantity()));
+                    event.productQuantity(),
+                    product.name(),
+                    product.price(),
+                    event.chargeId(),
+                    event.refundId(),
+                    product.price() * event.productQuantity(),
+                    event.splitInto(),
+                    event.cardNumber(),
+                    event.shippingId(),
+                    event.address()));
 
             case SHIPPING_ACCEPTED-> Mono.empty();
 
