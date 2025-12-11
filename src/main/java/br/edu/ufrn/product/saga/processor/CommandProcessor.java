@@ -9,7 +9,6 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 
-import br.edu.ufrn.product.exception.InsufficientQuantityException;
 import br.edu.ufrn.product.saga.processor.command.Command;
 import br.edu.ufrn.product.saga.processor.event.Event;
 import br.edu.ufrn.product.saga.processor.event.EventType;
@@ -29,68 +28,41 @@ public class CommandProcessor {
     @Bean
     public Function<Flux<Command>, Flux<Event>> processProductCommand() {
         return flux -> flux
-            .concatMap(this::process);
+            .doOnNext(command -> logger.info("Received payment command: {}", command))
+            .concatMap(this::process)
+            .doOnNext(event -> logger.info("Sending payment event: {}", event));
+
     }
 
     private Mono<Event> process(Command command) {
         return switch (command.type()) {
-            case RESERVE_PRODUCT -> reserveProduct(command);
-            case RETURN_PRODUCT -> returnProduct(command);
+            case RESERVE_PRODUCT -> productService.decrease(command.productId(),  command.productQuantity())
+                .flatMap(i -> productService.retrieveProduct(command.productId()))
+                .map(product -> new Event(
+                    EventType.PRODUCT_RESERVED,
+                    command.orderId(),
+                    product.id(),
+                    product.name(),
+                    command.productQuantity(),
+                    product.price()))
+                .onErrorReturn(new Event(
+                    EventType.PRODUCT_UNAVAILABLE,
+                    command.orderId(),
+                    command.productId(),
+                    null,
+                    command.productQuantity(),
+                    null));
+
+            case RETURN_PRODUCT -> productService.increase(command.productId(), command.productQuantity())
+                .flatMap(i -> productService.retrieveProduct(command.productId()))
+                .map(product -> new Event(
+                    EventType.PRODUCT_RETURNED,
+                    command.orderId(),
+                    product.id(),
+                    product.name(),
+                    command.productQuantity(),
+                    product.price()));
         };
-    }
-
-    private Mono<Event> reserveProduct(Command command) {
-        return productService
-            .retrieveProduct(command.productId())
-            .flatMap(product -> productService
-                .decreaseProduct(command.productId(), command.productQuantity())
-                .then(
-                    Mono.just(
-                        new Event(
-                            EventType.PRODUCT_RESERVED,
-                            command.orderId(),
-                            product.id(),
-                            product.name(),
-                            command.productQuantity(),
-                            product.price()
-                        )
-                    )
-                )
-                .onErrorResume(
-                    InsufficientQuantityException.class, e -> Mono.just(
-                        new Event(
-                            EventType.PRODUCT_UNAVAILABLE,
-                            command.orderId(),
-                            product.id(),
-                            product.name(),
-                            command.productQuantity(),
-                            product.price()
-                        )
-                    )
-                )
-            )
-            .doOnSuccess(productEvent -> logger.info("Product reserved: {}", productEvent));
-    }
-
-    private Mono<Event> returnProduct(Command command) {
-        return productService
-            .retrieveProduct(command.productId())
-            .flatMap(product -> productService
-                .increaseProduct(command.productId(), command.productQuantity())
-                .then(
-                    Mono.just(
-                        new Event(
-                            EventType.PRODUCT_RETURNED,
-                            command.orderId(),
-                            product.id(),
-                            product.name(),
-                            command.productQuantity(),
-                            product.price()
-                        )
-                    )
-                )
-            )
-            .doOnSuccess(productEvent -> logger.info("Product returned: {}", productEvent));
     }
 
 }
